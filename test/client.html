@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WebRTC Signaling Test</title>
+</head>
+
+<body>
+    <h2>WebRTC Signaling Test</h2>
+    <button onclick="connect()">Connect</button>
+    <button onclick="sendTestMessage()">Send Test Message</button>
+    <div id="log"></div>
+
+    <script>
+        let ws;
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML += `<p>${message}</p>`;
+        }
+
+        function connect() {
+            ws = new WebSocket('ws://localhost:8080/ws');
+
+            ws.onopen = () => {
+                log('Connected to signaling server');
+            };
+
+            ws.onmessage = (event) => {
+                log('Received: ' + event.data);
+            };
+
+            ws.onclose = () => {
+                log('Disconnected from server');
+            };
+
+            ws.onerror = (error) => {
+                log('Error: ' + error);
+            };
+        }
+
+        function sendTestMessage() {
+            const testMessage = {
+                type: "offer",
+                sdp: {
+                    type: "offer",
+                    sdp: "test sdp data"
+                }
+            };
+            ws.send(JSON.stringify(testMessage));
+            log('Sent test message');
+        }
+    </script>
+</body>
+
+</html>
